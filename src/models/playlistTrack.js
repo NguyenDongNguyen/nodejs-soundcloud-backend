@@ -9,12 +9,23 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            ChiTietDanhSach.belongsTo(models.DanhSachPhat, {
+                foreignKey: 'DanhSachPhatId',
+                onDelete: 'CASCADE',
+            });
         }
     }
     ChiTietDanhSach.init(
         {
-            DanhSachId: DataTypes.INTEGER,
+            DanhSachPhatId: DataTypes.INTEGER,
             BaiNhacId: DataTypes.INTEGER,
+            tieuDe: DataTypes.STRING,
+            moTa: DataTypes.STRING,
+            theLoai: DataTypes.STRING,
+            linkAnh: DataTypes.STRING,
+            linkNhac: DataTypes.STRING,
+            tongYeuThich: DataTypes.INTEGER,
+            tongLuotXem: DataTypes.INTEGER,
         },
         {
             sequelize,

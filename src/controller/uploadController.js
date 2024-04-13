@@ -1,6 +1,5 @@
 import multer from 'multer';
 import path from 'path';
-import db from '../models/index';
 import uploadService from '../service/uploadService';
 
 const storage = multer.diskStorage({

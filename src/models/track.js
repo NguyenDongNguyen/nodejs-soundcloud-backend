@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
             BaiNhac.belongsTo(models.ThanhVien);
             BaiNhac.hasMany(models.YeuThich);
             BaiNhac.hasMany(models.BinhLuan);
-            BaiNhac.belongsToMany(models.DanhSachPhat, {
-                through: 'ChiTietDanhSach',
-                foreignKey: 'BaiNhacId',
-            });
         }
     }
     BaiNhac.init(

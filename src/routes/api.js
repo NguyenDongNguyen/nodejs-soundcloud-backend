@@ -3,6 +3,7 @@ import authController from '../controller/authController';
 import adminController from '../controller/adminController';
 import trackController from '../controller/trackController';
 import uploadController from '../controller/uploadController';
+import playlistController from '../controller/playlistController';
 import { authMiddleWare } from '../middleware/JWTAction';
 const router = express.Router();
 
@@ -38,6 +39,12 @@ const initApiRoutes = (app) => {
     router.post('/files/upload-images', uploadController.handleUploadFileImages);
     router.post('/files/upload-tracks', uploadController.handleUploadFileTracks);
     router.post('/tracks', uploadController.uploadNewTrack);
+
+    //CRUD Playlist
+    router.post('/playlists/empty', playlistController.createEmptyPlaylist);
+    router.patch('/playlists', playlistController.updatePlaylist);
+    router.delete('/playlists/:slug', playlistController.deletePlaylist);
+    router.post('/playlists/by-user', playlistController.fetchUserPlaylist);
 
     return app.use('/api/v1/', router);
 };

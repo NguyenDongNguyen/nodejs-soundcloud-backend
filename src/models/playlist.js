@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             DanhSachPhat.belongsTo(models.ThanhVien);
-            DanhSachPhat.belongsToMany(models.BaiNhac, {
-                through: 'ChiTietDanhSach',
-                foreignKey: 'DanhSachId',
+            DanhSachPhat.hasMany(models.ChiTietDanhSach, {
+                foreignKey: 'DanhSachPhatId',
+                onDelete: 'CASCADE',
             });
         }
     }
