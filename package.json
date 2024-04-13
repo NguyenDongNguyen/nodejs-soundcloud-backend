@@ -1,0 +1,27 @@
+{
+    "name": "backend-soundcloud",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon --exec babel-node src/server.js"
+    },
+    "author": "dong nguyen",
+    "license": "ISC",
+    "dependencies": {
+        "@babel/core": "7.23.5",
+        "@babel/node": "7.22.19",
+        "@babel/preset-env": "7.23.5",
+        "bcryptjs": "2.4.3",
+        "body-parser": "1.19.1",
+        "cors": "^2.8.5",
+        "dotenv": "10.0.0",
+        "express": "4.17.2",
+        "jsonwebtoken": "9.0.2",
+        "mysql2": "3.6.5",
+        "nodemon": "3.0.1",
+        "sequelize": "6.35.1",
+        "sequelize-cli": "6.6.2"
+    }
+}
