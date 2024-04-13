@@ -2,6 +2,7 @@ import express from 'express';
 import authController from '../controller/authController';
 import adminController from '../controller/adminController';
 import trackController from '../controller/trackController';
+import uploadController from '../controller/uploadController';
 import { authMiddleWare } from '../middleware/JWTAction';
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const initApiRoutes = (app) => {
     router.patch('/users', authMiddleWare, adminController.updateUser);
     router.delete('/users/:slug', authMiddleWare, adminController.deleteUser);
     router.get('/tracks', authMiddleWare, adminController.getTrackWithPagination);
-    router.post('/tracks', authMiddleWare, adminController.createNewTrack);
+    // router.post('/tracks', authMiddleWare, adminController.createNewTrack);
     router.patch('/users-vip', authMiddleWare, adminController.updateUserVIP);
     router.patch('/tracks-access', authMiddleWare, adminController.accessTrack);
 
@@ -32,6 +33,11 @@ const initApiRoutes = (app) => {
     router.post('/tracks/increase-view', trackController.increaseCountView);
     router.post('/tracks/users', trackController.getTrackCreatedByUser);
     router.post('/tracks/search', trackController.searchTrackWithName);
+
+    //upload a new track (client)
+    router.post('/files/upload-images', uploadController.handleUploadFileImages);
+    router.post('/files/upload-tracks', uploadController.handleUploadFileTracks);
+    router.post('/tracks', uploadController.uploadNewTrack);
 
     return app.use('/api/v1/', router);
 };
