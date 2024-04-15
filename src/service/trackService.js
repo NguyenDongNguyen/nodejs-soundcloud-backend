@@ -30,6 +30,32 @@ const getTrackByCategory = async (data) => {
     }
 };
 
+const getTrackDetail = async (id) => {
+    try {
+        // findAndCountAll tìm và lấy ra
+        const track = await db.BaiNhac.findOne({
+            where: { id: id },
+            // include tương tự join trong sql
+            include: {
+                model: db.ThanhVien,
+                attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
+            },
+        });
+
+        return {
+            EM: 'Get track detail',
+            DT: track,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'something wrongs Get track detail',
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
 const getCommentByTrack = async (page, limit, trackId) => {
     try {
         // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
@@ -163,6 +189,8 @@ const getTrackLikeByUser = async (page, limit, token) => {
                     'linkNhac',
                     'tongYeuThich',
                     'tongLuotXem',
+                    'createdAt',
+                    'updatedAt',
                 ],
             },
             order: [['createdAt', 'DESC']],
@@ -231,43 +259,29 @@ const increaseCountView = async (data) => {
     }
 };
 
-const getTrackCreatedByUser = async (page, limit, data) => {
+const getTrackCreatedByUser = async (data) => {
     try {
-        // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
-        let offset = (page - 1) * limit;
-
         // findAndCountAll tìm và lấy ra (count: tổng số ptu trong DB, rows: từng ptu)
-        const { count, rows } = await db.BaiNhac.findAndCountAll({
-            offset: offset,
-            limit: limit,
+        const res = await db.BaiNhac.findAll({
             where: { ThanhVienId: data.id },
             // include tương tự join trong sql
             include: {
                 model: db.ThanhVien,
                 attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
             },
-            order: [['createdAt', 'DESC']],
         });
-
-        let totalPages = Math.ceil(count / limit);
-        let meta = {
-            current: page,
-            pageSize: limit,
-            pages: totalPages,
-            total: count,
-        };
 
         return {
             EM: 'Get Track created by a user',
             DT: {
-                meta: meta,
-                result: rows,
+                // meta: meta,
+                result: res,
             },
         };
     } catch (error) {
         console.log(error);
         return {
-            EM: 'something wrongs with service',
+            EM: 'something wrongs Get Track created by a user',
             EC: 1,
             DT: [],
         };
@@ -304,6 +318,7 @@ const searchTrackWithName = async (data) => {
 
 module.exports = {
     getTrackByCategory,
+    getTrackDetail,
     getCommentByTrack,
     createCommentOnTrack,
     createLikeOrDislike,

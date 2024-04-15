@@ -26,10 +26,10 @@ const initApiRoutes = (app) => {
 
     //track client
     router.post('/tracks/top', trackController.getTrackByCategory);
+    router.get('/tracks/:slug', trackController.getTrackDetail);
     router.post('/tracks/comments', trackController.getCommentByTrack);
     router.post('/comments', trackController.createCommentOnTrack);
     router.post('/likes', trackController.createLikeOrDislike);
-    router.get('/likes', trackController.getTrackLikeByUser);
     router.get('/likes', trackController.getTrackLikeByUser);
     router.post('/tracks/increase-view', trackController.increaseCountView);
     router.post('/tracks/users', trackController.getTrackCreatedByUser);

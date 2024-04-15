@@ -34,13 +34,15 @@ const updatePlaylist = async (data) => {
             where: { id: data.id },
         });
         if (playlist) {
+            await db.ChiTietDanhSach.destroy({
+                where: { DanhSachPhatId: data.id },
+            });
             data?.tracks.map(async (item) => {
                 const track = await db.BaiNhac.findOne({
                     where: { id: item },
                     raw: true,
                     nest: true,
                 });
-                console.log('🚀 ~ data?.tracks.map ~ track:', track);
 
                 await db.ChiTietDanhSach.create({
                     DanhSachPhatId: data.id,

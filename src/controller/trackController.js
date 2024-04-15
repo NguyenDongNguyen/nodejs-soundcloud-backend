@@ -16,6 +16,22 @@ const getTrackByCategory = async (req, res) => {
     }
 };
 
+const getTrackDetail = async (req, res) => {
+    try {
+        let data = await trackService.getTrackDetail(req.params.slug);
+        return res.status(200).json({
+            message: data.EM, // error message
+            data: data.DT, // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'error from server', // error message
+            data: '', // data
+        });
+    }
+};
+
 const getCommentByTrack = async (req, res) => {
     try {
         let page = req.query.current;
@@ -75,6 +91,7 @@ const getTrackLikeByUser = async (req, res) => {
         let page = req.query.current;
         let limit = req.query.pageSize;
         const token = req.headers.authorization.split(' ')[1];
+        console.log('🚀 ~ getTrackLikeByUser ~ token:', token);
         // "+" convert typeof string -> number
         let data = await trackService.getTrackLikeByUser(+page, +limit, token);
         return res.status(200).json({
@@ -108,10 +125,8 @@ const increaseCountView = async (req, res) => {
 
 const getTrackCreatedByUser = async (req, res) => {
     try {
-        let page = req.query.current;
-        let limit = req.query.pageSize;
         // "+" convert typeof string -> number
-        let data = await trackService.getTrackCreatedByUser(+page, +limit, req.body);
+        let data = await trackService.getTrackCreatedByUser(req.body);
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data
@@ -143,6 +158,7 @@ const searchTrackWithName = async (req, res) => {
 
 module.exports = {
     getTrackByCategory,
+    getTrackDetail,
     getCommentByTrack,
     createCommentOnTrack,
     createLikeOrDislike,

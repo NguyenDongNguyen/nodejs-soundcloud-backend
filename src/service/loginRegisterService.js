@@ -127,6 +127,7 @@ const handleLoginBySocial = async (rawData) => {
             where: {
                 // [Op.or]: [{ email: rawData.valueLogin }, { phone: rawData.valueLogin }],
                 email: rawData.username,
+                loaiTk: rawData.type,
             },
         });
 
@@ -134,9 +135,8 @@ const handleLoginBySocial = async (rawData) => {
             let payload = {
                 id: data.id,
                 email: data.email,
-                name: data.ten,
+                username: data.ten,
                 type: data.loaiTk,
-                avatar: data.hinhAnh,
                 role: data.quyen,
             };
             let access_token = createJWT(payload);
