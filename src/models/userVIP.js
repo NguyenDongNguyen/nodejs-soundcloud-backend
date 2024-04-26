@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
     ThanhVienVIP.init(
         {
-            idThanhVien: DataTypes.INTEGER,
-            trangThai: DataTypes.STRING,
+            ThanhVienId: DataTypes.INTEGER,
+            trangThai: DataTypes.BOOLEAN,
         },
         {
             sequelize,

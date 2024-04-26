@@ -6,7 +6,7 @@ const getUserWithPagination = async (req, res) => {
         let page = req.query.current;
         let limit = req.query.pageSize;
         // "+" convert typeof string -> number
-        let data = await adminService.getUserWithPagination(+page, +limit);
+        let data = await adminService.getUserWithPagination(+page, +limit, req?.body);
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data
@@ -122,9 +122,47 @@ const updateUserVIP = async (req, res) => {
     }
 };
 
+const getTrackUnPublic = async (req, res) => {
+    try {
+        let page = req.query.current;
+        let limit = req.query.pageSize;
+        // "+" convert typeof string -> number
+        let data = await adminService.getTrackUnPublic(+page, +limit, req.body);
+        return res.status(200).json({
+            message: data.EM, // error message
+            data: data.DT, // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'error from server', // error message
+            data: '', // data
+        });
+    }
+};
+
 const accessTrack = async (req, res) => {
     try {
         let data = await adminService.accessTrack(req.body);
+        return res.status(200).json({
+            message: data.EM, // error message
+            data: data.DT, // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'error from server', // error message
+            data: '', // data
+        });
+    }
+};
+
+const getUserVipWithPagination = async (req, res) => {
+    try {
+        let page = req.query.current;
+        let limit = req.query.pageSize;
+        // "+" convert typeof string -> number
+        let data = await adminService.getUserVipWithPagination(+page, +limit, req.body);
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data
@@ -146,5 +184,7 @@ module.exports = {
     getTrackWithPagination,
     createNewTrack,
     updateUserVIP,
+    getTrackUnPublic,
     accessTrack,
+    getUserVipWithPagination,
 };

@@ -56,7 +56,7 @@ const getTrackDetail = async (id) => {
     }
 };
 
-const getCommentByTrack = async (page, limit, trackId) => {
+const getCommentByTrack = async (page, limit, trackId, data) => {
     try {
         // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
         let offset = (page - 1) * limit;
@@ -69,9 +69,15 @@ const getCommentByTrack = async (page, limit, trackId) => {
             // include tương tự join trong sql
             include: {
                 model: db.ThanhVien,
-                attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
+                attributes: ['id', 'email', 'ten', 'quyen', 'hinhAnh', 'loaiTk'],
             },
-            order: [['createdAt', 'DESC']],
+            order: [
+                data.sort == 'createdAtDesc'
+                    ? ['createdAt', 'DESC']
+                    : data.sort == 'createdAtEsc'
+                    ? ['createdAt', 'ASC']
+                    : ['thoiGianBaiNhac', 'DESC'],
+            ],
         });
 
         let totalPages = Math.ceil(count / limit);
@@ -129,12 +135,6 @@ const createLikeOrDislike = async (token, data) => {
     try {
         let decoded = await verifyToken(token);
 
-        // create new like track
-        const res = await db.YeuThich.create({
-            BaiNhacId: data.track,
-            ThanhVienId: decoded?.user?.id,
-        });
-
         let track = await db.BaiNhac.findOne({
             where: { id: data.track },
         });
@@ -142,6 +142,21 @@ const createLikeOrDislike = async (token, data) => {
             await track.update({
                 tongYeuThich: parseInt(track.tongYeuThich) + parseInt(data.quantity),
             });
+
+            let exitsLike = await db.YeuThich.findOne({
+                where: { BaiNhacId: data.track, ThanhVienId: decoded?.user?.id },
+            });
+
+            if (exitsLike) {
+                // dislike thì xoá khỏi bảng
+                await exitsLike.destroy();
+            } else {
+                // create new like track
+                await db.YeuThich.create({
+                    BaiNhacId: data.track,
+                    ThanhVienId: decoded?.user?.id,
+                });
+            }
         } else {
             return {
                 EM: 'track not found',
@@ -273,10 +288,7 @@ const getTrackCreatedByUser = async (data) => {
 
         return {
             EM: 'Get Track created by a user',
-            DT: {
-                // meta: meta,
-                result: res,
-            },
+            DT: res,
         };
     } catch (error) {
         console.log(error);
@@ -290,9 +302,17 @@ const getTrackCreatedByUser = async (data) => {
 
 const searchTrackWithName = async (data) => {
     try {
-        const tracks = await db.BaiNhac.findAll({
+        let offset = (data.current - 1) * data.pageSize;
+
+        const { count, rows } = await db.BaiNhac.findAndCountAll({
+            offset: offset,
+            limit: data.pageSize,
             where: {
-                [Op.or]: [{ tieuDe: { [Op.like]: '%' + data.title + '%' } }],
+                [Op.or]: [
+                    { tieuDe: { [Op.like]: '%' + data.title + '%' } },
+                    { theLoai: { [Op.like]: '%' + data.category + '%' } },
+                ],
+                isPublic: true,
             },
             // include tương tự join trong sql
             include: {
@@ -301,6 +321,22 @@ const searchTrackWithName = async (data) => {
             },
             order: [['tongLuotXem', 'DESC']],
         });
+
+        let totalPages = Math.ceil(count / data.pageSize);
+        let meta = {
+            current: data.current,
+            pageSize: data.pageSize,
+            pages: totalPages,
+            total: count,
+        };
+
+        return {
+            EM: 'Get Search of tracks',
+            DT: {
+                meta: meta,
+                result: rows,
+            },
+        };
 
         return {
             EM: 'Get Search of tracks',

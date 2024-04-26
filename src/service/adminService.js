@@ -2,16 +2,31 @@ require('dotenv').config();
 import db from '../models/index';
 import { checkEmailExist, hashUserPassword } from './loginRegisterService';
 import { verifyToken } from '../middleware/JWTAction';
+import { Op } from 'sequelize';
 
-const getUserWithPagination = async (page, limit) => {
+const getUserWithPagination = async (page, limit, data) => {
     try {
+        console.log('🚀 ~ getUserWithPagination ~ data:', data);
         // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
         let offset = (page - 1) * limit;
+        const whereCondition = () => {
+            if (data.email || data.name) {
+                return {
+                    [Op.or]: [
+                        { email: { [Op.like]: '%' + data.email + '%' } },
+                        { ten: { [Op.like]: '%' + data.name + '%' } },
+                    ],
+                };
+            } else {
+                return { [Op.and]: [] };
+            }
+        };
 
         // findAndCountAll tìm và lấy ra (count: tổng số ptu trong DB, rows: từng ptu)
         const { count, rows } = await db.ThanhVien.findAndCountAll({
             offset: offset,
             limit: limit,
+            where: whereCondition(),
             attributes: {
                 exclude: ['matKhau'],
             },
@@ -277,6 +292,63 @@ const updateUserVIP = async (data) => {
     }
 };
 
+const getTrackUnPublic = async (page, limit, data) => {
+    try {
+        // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
+        let offset = (page - 1) * limit;
+
+        const whereCondition = () => {
+            if (data.title || data.category) {
+                return {
+                    isPublic: false,
+                    [Op.or]: [
+                        { tieuDe: { [Op.like]: '%' + data.title + '%' } },
+                        { theLoai: { [Op.like]: '%' + data.category + '%' } },
+                    ],
+                };
+            } else {
+                return { isPublic: false, [Op.and]: [] };
+            }
+        };
+
+        // findAndCountAll tìm và lấy ra (count: tổng số ptu trong DB, rows: từng ptu)
+        const { count, rows } = await db.BaiNhac.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            where: whereCondition(),
+            // include tương tự join trong sql
+            include: {
+                model: db.ThanhVien,
+                attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
+            },
+            order: [['id', 'DESC']],
+        });
+
+        let totalPages = Math.ceil(count / limit);
+        let meta = {
+            current: page,
+            pageSize: limit,
+            pages: totalPages,
+            total: count,
+        };
+
+        return {
+            EM: 'Fetch track unPublic with paginate',
+            DT: {
+                meta: meta,
+                result: rows,
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'something wrongs with service',
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
 // duyệt bài nhạc
 const accessTrack = async (data) => {
     try {
@@ -316,6 +388,61 @@ const accessTrack = async (data) => {
     }
 };
 
+const getUserVipWithPagination = async (page, limit, data) => {
+    try {
+        // để xđịnh ptu đầu tiên của 1 page mới (offset là ptu cuối cùng của page htai)
+        let offset = (page - 1) * limit;
+
+        const whereCondition = () => {
+            if (data.email || data.name) {
+                return {
+                    [Op.or]: [
+                        { email: { [Op.like]: '%' + data.email + '%' } },
+                        { ten: { [Op.like]: '%' + data.name + '%' } },
+                    ],
+                };
+            } else {
+                return { [Op.and]: [] };
+            }
+        };
+
+        // findAndCountAll tìm và lấy ra (count: tổng số ptu trong DB, rows: từng ptu)
+        const { count, rows } = await db.ThanhVienVIP.findAndCountAll({
+            offset: offset,
+            limit: limit,
+            include: {
+                model: db.ThanhVien,
+                attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
+                where: whereCondition(),
+            },
+            order: [['id', 'DESC']],
+        });
+
+        let totalPages = Math.ceil(count / limit);
+        let meta = {
+            current: page,
+            pageSize: limit,
+            pages: totalPages,
+            total: count,
+        };
+
+        return {
+            EM: 'Fetch user VIP with paginate',
+            DT: {
+                meta: meta,
+                result: rows,
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'something wrongs with service',
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
 module.exports = {
     getUserWithPagination,
     createNewUser,
@@ -324,5 +451,7 @@ module.exports = {
     getTrackWithPagination,
     createNewTrack,
     updateUserVIP,
+    getTrackUnPublic,
     accessTrack,
+    getUserVipWithPagination,
 };

@@ -13,7 +13,7 @@ module.exports = {
                 type: Sequelize.INTEGER,
             },
             trangThai: {
-                type: Sequelize.STRING,
+                type: Sequelize.BOOLEAN,
             },
 
             createdAt: {

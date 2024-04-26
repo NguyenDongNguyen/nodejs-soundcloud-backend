@@ -38,7 +38,12 @@ const getCommentByTrack = async (req, res) => {
         let limit = req.query.pageSize;
         let trackId = req.query.trackId;
         // "+" convert typeof string -> number
-        let data = await trackService.getCommentByTrack(+page, +limit, trackId);
+        let data = await trackService.getCommentByTrack(
+            +page,
+            +limit,
+            trackId,
+            req?.body
+        );
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data

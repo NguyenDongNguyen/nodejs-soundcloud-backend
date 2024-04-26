@@ -29,7 +29,7 @@ const registerNewUser = async (rawUserData) => {
             return {
                 EM: 'The mail is already exist',
                 EC: 1,
-                DT: 'email error',
+                DT: '',
             };
         }
 
@@ -42,7 +42,7 @@ const registerNewUser = async (rawUserData) => {
             ten: rawUserData.name,
             matKhau: hashPassword,
             loaiTk: 'SYSTEM',
-            ngaySinh: '',
+            ngaySinh: rawUserData.birthday,
             hinhAnh: '',
             quyen: 'USER',
         });
@@ -50,7 +50,7 @@ const registerNewUser = async (rawUserData) => {
         return {
             EM: 'A user is create successfully!',
             EC: 0,
-            DT: '',
+            DT: 'okee',
         };
     } catch (error) {
         console.log(error);
@@ -137,6 +137,7 @@ const handleLoginBySocial = async (rawData) => {
                 email: data.email,
                 username: data.ten,
                 type: data.loaiTk,
+                birthday: data.ngaySinh,
                 role: data.quyen,
             };
             let access_token = createJWT(payload);
@@ -159,6 +160,7 @@ const handleLoginBySocial = async (rawData) => {
                 email: rawData.username,
                 ten: rawData.username,
                 loaiTk: rawData.type,
+                ngaySinh: '',
                 hinhAnh: '',
                 quyen: 'USER',
             });

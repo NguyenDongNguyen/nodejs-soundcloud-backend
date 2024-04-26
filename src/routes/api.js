@@ -1,6 +1,7 @@
 import express from 'express';
 import authController from '../controller/authController';
 import adminController from '../controller/adminController';
+import userController from '../controller/userController';
 import trackController from '../controller/trackController';
 import uploadController from '../controller/uploadController';
 import playlistController from '../controller/playlistController';
@@ -15,14 +16,27 @@ const initApiRoutes = (app) => {
     router.post('/auth/social-media', authController.handleLoginBySocial);
 
     //admin
-    router.get('/users', authMiddleWare, adminController.getUserWithPagination);
+    router.post('/users', authMiddleWare, adminController.getUserWithPagination);
     router.post('/users', authMiddleWare, adminController.createNewUser);
     router.patch('/users', authMiddleWare, adminController.updateUser);
     router.delete('/users/:slug', authMiddleWare, adminController.deleteUser);
-    router.get('/tracks', authMiddleWare, adminController.getTrackWithPagination);
+    router.get('/tracks', adminController.getTrackWithPagination);
     // router.post('/tracks', authMiddleWare, adminController.createNewTrack);
     router.patch('/users-vip', authMiddleWare, adminController.updateUserVIP);
+    router.post('/tracks-unPublic', authMiddleWare, adminController.getTrackUnPublic);
     router.patch('/tracks-access', authMiddleWare, adminController.accessTrack);
+    router.post(
+        '/all-users-vip',
+        authMiddleWare,
+        adminController.getUserVipWithPagination
+    );
+
+    //user
+    router.get('/users/:slug', userController.getUserDetail);
+    router.patch('/users/:slug', userController.updateUserClient);
+    router.post('/users/upload-avatar/:slug', userController.handleUploadAvatar);
+    router.post('/users-vip', userController.createUserVip);
+    router.get('/users-vip/:slug', userController.getUserVipDetail);
 
     //track client
     router.post('/tracks/top', trackController.getTrackByCategory);
