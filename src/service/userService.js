@@ -4,7 +4,6 @@ import emailService from './emailService';
 const getUserDetail = async (id) => {
     const user = await db.ThanhVien.findOne({
         where: { id: id },
-        attributes: ['id', 'ThanhVienId', 'trangThai'],
     });
     if (user) {
         return {
@@ -63,7 +62,7 @@ const createUserVip = async (data) => {
             trangThai: data.status,
         });
 
-        await emailService.sendEmailCreateOrder(data.email);
+        await emailService.sendEmailCreateUserVip(data.email);
 
         return {
             EM: 'Registered member vip successfully, Please wait for confirmation',

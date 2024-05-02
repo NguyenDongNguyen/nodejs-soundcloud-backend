@@ -14,10 +14,12 @@ const initApiRoutes = (app) => {
     router.post('/auth/login', authController.handleLogin);
     router.post('/auth/refresh', authController.handleRefreshToken);
     router.post('/auth/social-media', authController.handleLoginBySocial);
+    router.post('/auth/forgot-password', authController.handleForgotPass);
+    router.post('/auth/reset-password/:id/:token', authController.handleResetPass);
 
     //admin
     router.post('/users', authMiddleWare, adminController.getUserWithPagination);
-    router.post('/users', authMiddleWare, adminController.createNewUser);
+    router.post('/create-users', authMiddleWare, adminController.createNewUser);
     router.patch('/users', authMiddleWare, adminController.updateUser);
     router.delete('/users/:slug', authMiddleWare, adminController.deleteUser);
     router.get('/tracks', adminController.getTrackWithPagination);
