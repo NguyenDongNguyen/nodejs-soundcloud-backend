@@ -23,7 +23,7 @@ const initApiRoutes = (app) => {
     router.patch('/users', authMiddleWare, adminController.updateUser);
     router.delete('/users/:slug', authMiddleWare, adminController.deleteUser);
     router.get('/tracks', adminController.getTrackWithPagination);
-    // router.post('/tracks', authMiddleWare, adminController.createNewTrack);
+    router.patch('/tracks', authMiddleWare, authMiddleWare, adminController.updateTrack);
     router.patch('/users-vip', authMiddleWare, adminController.updateUserVIP);
     router.post('/tracks-unPublic', authMiddleWare, adminController.getTrackUnPublic);
     router.patch('/tracks-access', authMiddleWare, adminController.accessTrack);
@@ -39,6 +39,8 @@ const initApiRoutes = (app) => {
     router.post('/users/upload-avatar/:slug', userController.handleUploadAvatar);
     router.post('/users-vip', userController.createUserVip);
     router.get('/users-vip/:slug', userController.getUserVipDetail);
+    router.get('/follow/:slug', userController.getListFollowByUser);
+    router.post('/follow', userController.createFollowOrUnfollow);
 
     //track client
     router.post('/tracks/top', trackController.getTrackByCategory);
@@ -58,7 +60,9 @@ const initApiRoutes = (app) => {
 
     //CRUD Playlist
     router.post('/playlists/empty', playlistController.createEmptyPlaylist);
-    router.patch('/playlists', playlistController.updatePlaylist);
+    router.patch('/playlists/add-track', playlistController.updatePlaylist);
+    router.patch('/playlists/multi-track', playlistController.updateMultiTrackPlaylist);
+    router.patch('/playlists/remove-track', playlistController.deleteTrackOfPlaylist);
     router.delete('/playlists/:slug', playlistController.deletePlaylist);
     router.post('/playlists/by-user', playlistController.fetchUserPlaylist);
 

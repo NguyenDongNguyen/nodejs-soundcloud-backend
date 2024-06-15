@@ -108,10 +108,53 @@ const getUserVipDetail = async (req, res) => {
     }
 };
 
+const createFollowOrUnfollow = async (req, res) => {
+    try {
+        let data = await userService.createFollowOrUnfollow(req.body);
+        return res.status(200).json({
+            message: data.EM, // error message
+            data: data.DT, // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'error from server', // error message
+            data: '', // data
+        });
+    }
+};
+
+const getListFollowByUser = async (req, res) => {
+    try {
+        let page = req.query.current;
+        let limit = req.query.pageSize;
+        let status = req.query.status;
+        // "+" convert typeof string -> number
+        let data = await userService.getListFollowByUser(
+            +page,
+            +limit,
+            status,
+            req.params.slug
+        );
+        return res.status(200).json({
+            message: data.EM, // error message
+            data: data.DT, // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: 'error from server', // error message
+            data: '', // data
+        });
+    }
+};
+
 module.exports = {
     getUserDetail,
     updateUserClient,
     handleUploadAvatar,
     createUserVip,
     getUserVipDetail,
+    getListFollowByUser,
+    createFollowOrUnfollow,
 };

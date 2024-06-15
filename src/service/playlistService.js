@@ -31,6 +31,51 @@ const createEmptyPlaylist = async (token, data) => {
 const updatePlaylist = async (data) => {
     try {
         let playlist = await db.DanhSachPhat.findOne({
+            where: { id: data.idPlaylist },
+        });
+        if (playlist) {
+            const track = await db.BaiNhac.findOne({
+                where: { id: data.idTrack },
+                raw: true,
+                nest: true,
+            });
+
+            await db.ChiTietDanhSach.create({
+                DanhSachPhatId: data.idPlaylist,
+                BaiNhacId: track.id,
+                tieuDe: track.tieuDe,
+                moTa: track.moTa,
+                theLoai: track.theLoai,
+                linkAnh: track.linkAnh,
+                linkNhac: track.linkNhac,
+                tongYeuThich: track.tongYeuThich,
+                tongLuotXem: track.tongLuotXem,
+            });
+
+            return {
+                EM: 'Added track to playlist successfully',
+                DT: 'oke',
+            };
+        } else {
+            return {
+                EM: 'Playlist not found',
+                EC: 2,
+                DT: '',
+            };
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'something wrongs with service',
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
+const updateMultiTrackPlaylist = async (data) => {
+    try {
+        let playlist = await db.DanhSachPhat.findOne({
             where: { id: data.id },
         });
         if (playlist) {
@@ -78,6 +123,36 @@ const updatePlaylist = async (data) => {
     }
 };
 
+const deleteTrackOfPlaylist = async (data) => {
+    try {
+        let playlist = await db.DanhSachPhat.findOne({
+            where: { id: data.idPlaylist },
+        });
+
+        if (playlist) {
+            await db.ChiTietDanhSach.destroy({
+                where: { DanhSachPhatId: data.idPlaylist, BaiNhacId: data.idTrack },
+            });
+
+            return {
+                EM: 'removed track from the playlist successfully',
+                DT: 'oke',
+            };
+        } else {
+            return {
+                EM: 'playlist not exits',
+                DT: '',
+            };
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: 'something wrongs with service',
+            DT: '',
+        };
+    }
+};
+
 const deletePlaylist = async (id) => {
     try {
         let playlist = await db.DanhSachPhat.findOne({
@@ -86,6 +161,11 @@ const deletePlaylist = async (id) => {
 
         if (playlist) {
             const res = await playlist.destroy();
+
+            await db.ChiTietDanhSach.destroy({
+                where: { DanhSachPhatId: id },
+            });
+
             return {
                 EM: 'Delete playlist success',
                 DT: {
@@ -107,15 +187,14 @@ const deletePlaylist = async (id) => {
     }
 };
 
-const fetchUserPlaylist = async (page, limit, token) => {
+const fetchUserPlaylist = async (page, limit, id) => {
     try {
-        let decoded = await verifyToken(token);
         let offset = (page - 1) * limit;
         // findAndCountAll tìm và lấy ra
         const { count, rows } = await db.DanhSachPhat.findAndCountAll({
             offset: offset,
             limit: limit,
-            where: { ThanhVienId: decoded?.user?.id },
+            where: { ThanhVienId: id },
             // include tương tự join trong sql
             include: [
                 {
@@ -165,6 +244,8 @@ const fetchUserPlaylist = async (page, limit, token) => {
 module.exports = {
     createEmptyPlaylist,
     updatePlaylist,
+    updateMultiTrackPlaylist,
+    deleteTrackOfPlaylist,
     deletePlaylist,
     fetchUserPlaylist,
 };

@@ -27,6 +27,9 @@ module.exports = {
             hinhAnh: {
                 type: Sequelize.STRING,
             },
+            tongTheoDoi: {
+                type: Sequelize.INTEGER,
+            },
             quyen: {
                 type: Sequelize.STRING,
             },

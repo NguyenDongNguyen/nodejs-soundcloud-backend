@@ -38,7 +38,7 @@ const getTrackDetail = async (id) => {
             // include tương tự join trong sql
             include: {
                 model: db.ThanhVien,
-                attributes: ['id', 'email', 'ten', 'quyen', 'loaiTk'],
+                attributes: ['id', 'email', 'ten', 'hinhAnh', 'quyen', 'loaiTk'],
             },
         });
 
@@ -181,9 +181,8 @@ const createLikeOrDislike = async (token, data) => {
     }
 };
 
-const getTrackLikeByUser = async (page, limit, token) => {
+const getTrackLikeByUser = async (page, limit, id) => {
     try {
-        let decoded = await verifyToken(token);
         let offset = (page - 1) * limit;
 
         // findAndCountAll tìm và lấy ra (count: tổng số ptu trong DB, rows: từng ptu)
@@ -191,7 +190,7 @@ const getTrackLikeByUser = async (page, limit, token) => {
             offset: offset,
             limit: limit,
             attributes: [],
-            where: { ThanhVienId: decoded?.user?.id },
+            where: { ThanhVienId: id },
             // include tương tự join trong sql
             include: {
                 model: db.BaiNhac,

@@ -219,36 +219,38 @@ const getTrackWithPagination = async (page, limit) => {
     }
 };
 
-const createNewTrack = async (token, data) => {
+const updateTrack = async (data) => {
     try {
-        let decoded = await verifyToken(token);
-
-        // create new user
-        const res = await db.BaiNhac.create({
-            tieuDe: data.title,
-            moTa: data.description,
-            theLoai: data.category,
-            linkAnh: data.imgUrl,
-            linkNhac: data.trackUrl,
-            tongYeuThich: data.countLike,
-            tongLuotXem: data.countPlay,
-            isPublic: data.isPublic,
-            ThanhVienId: decoded?.user?.id,
+        let track = await db.BaiNhac.findOne({
+            where: { id: data.id },
         });
+        if (track) {
+            const res = await track.update({
+                tieuDe: data.title,
+                moTa: data.description,
+                theLoai: data.category,
+            });
 
-        return {
-            EM: 'A track is create successfully!',
-            DT: {
-                id: res.id,
-                createdAt: res.createdAt,
-            },
-        };
+            return {
+                EM: 'Update track success',
+                DT: {
+                    id: res.id,
+                    updatedAt: res.updatedAt,
+                },
+            };
+        } else {
+            return {
+                EM: 'User not found',
+                EC: 2,
+                DT: '',
+            };
+        }
     } catch (error) {
         console.log(error);
         return {
-            EM: 'Something wrongs in service...',
-            EC: -2,
-            DT: '',
+            EM: 'something wrongs with service',
+            EC: 1,
+            DT: [],
         };
     }
 };
@@ -449,7 +451,7 @@ module.exports = {
     updateUser,
     deleteUser,
     getTrackWithPagination,
-    createNewTrack,
+    updateTrack,
     updateUserVIP,
     getTrackUnPublic,
     accessTrack,

@@ -95,10 +95,9 @@ const getTrackLikeByUser = async (req, res) => {
     try {
         let page = req.query.current;
         let limit = req.query.pageSize;
-        const token = req.headers.authorization.split(' ')[1];
-        console.log('🚀 ~ getTrackLikeByUser ~ token:', token);
+        let id = req.query.id;
         // "+" convert typeof string -> number
-        let data = await trackService.getTrackLikeByUser(+page, +limit, token);
+        let data = await trackService.getTrackLikeByUser(+page, +limit, id);
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data

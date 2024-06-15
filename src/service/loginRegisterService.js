@@ -46,6 +46,7 @@ const registerNewUser = async (rawUserData) => {
             loaiTk: 'SYSTEM',
             ngaySinh: rawUserData.birthday,
             hinhAnh: '',
+            tongTheoDoi: 0,
             quyen: 'USER',
         });
 
@@ -166,6 +167,7 @@ const handleLoginBySocial = async (rawData) => {
                 loaiTk: rawData.type,
                 ngaySinh: '',
                 hinhAnh: '',
+                tongTheoDoi: 0,
                 quyen: 'USER',
             });
             console.log('🚀 ~ handleLoginBySocial ~ res:', res);

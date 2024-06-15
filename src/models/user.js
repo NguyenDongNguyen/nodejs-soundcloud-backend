@@ -14,6 +14,14 @@ module.exports = (sequelize, DataTypes) => {
             ThanhVien.hasMany(models.DanhSachPhat);
             ThanhVien.hasMany(models.YeuThich);
             ThanhVien.hasMany(models.BinhLuan);
+            ThanhVien.hasMany(models.TheoDoi, {
+                as: 'follower',
+                foreignKey: 'nguoiTheoDoiId',
+            });
+            ThanhVien.hasMany(models.TheoDoi, {
+                as: 'followee',
+                foreignKey: 'nguoiDuocTheoDoiId',
+            });
         }
     }
     ThanhVien.init(
@@ -24,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             loaiTk: DataTypes.STRING,
             ngaySinh: DataTypes.STRING,
             hinhAnh: DataTypes.STRING,
+            tongTheoDoi: DataTypes.INTEGER,
             quyen: DataTypes.STRING,
         },
         {

@@ -89,10 +89,9 @@ const getTrackWithPagination = async (req, res) => {
     }
 };
 
-const createNewTrack = async (req, res) => {
+const updateTrack = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        let data = await adminService.createNewTrack(token, req.body);
+        let data = await adminService.updateTrack(req.body);
         return res.status(200).json({
             message: data.EM, // error message
             data: data.DT, // data
@@ -182,7 +181,7 @@ module.exports = {
     updateUser,
     deleteUser,
     getTrackWithPagination,
-    createNewTrack,
+    updateTrack,
     updateUserVIP,
     getTrackUnPublic,
     accessTrack,
